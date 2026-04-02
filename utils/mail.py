@@ -1,6 +1,6 @@
-from flask import Flask
+from flask import Config, Flask
 from flask_mail import Mail, Message
-from config import Config
+
 
 app = Flask(__name__)
 app.config.from_object(Config)
