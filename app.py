@@ -6,6 +6,7 @@ from controller.get_courses import get_program_courses
 from controller.capstone_controller import add_capstone
 import sys
 
+
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend communication
 
