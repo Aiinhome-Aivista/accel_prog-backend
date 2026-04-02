@@ -10,7 +10,8 @@ sys.dont_write_bytecode = True
 load_dotenv()
 # Central JWT Secret (CRITICAL: Must be same for login & verification)
 JWT_SECRET = os.getenv("JWT_SECRET", "default_secret_key")
-HOST_URL = os.getenv("HOST_URL")
+JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+JWT_EXPIRY_HOURS = int(os.getenv("JWT_EXPIRY_HOURS", 24))
 
 DB_CONFIG = {
     "host": os.getenv("DB_HOST"),

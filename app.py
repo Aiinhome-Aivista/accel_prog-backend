@@ -5,6 +5,7 @@ from flask_cors import CORS
 from controller.get_courses import get_program_courses
 from controller.capstone_controller import add_capstone
 import sys
+from controller.login_registration import login
 
 
 app = Flask(__name__)
@@ -31,7 +32,15 @@ def health():
 def get_program_courses_route():
     return get_program_courses()
 
-    
+
+@app.route(BASE_URL + "login", methods=["POST"])
+def login_route():
+    return login()
+
+
+
+
+
 # @app.route(BASE_URL + "courses/<int:course_id>", methods=["GET"])
 # def get_course_details_route(course_id):
 #     return get_course_details(course_id)
