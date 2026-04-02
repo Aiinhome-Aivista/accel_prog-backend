@@ -1,35 +1,47 @@
 from flask import jsonify
 from config import get_db_connection
+from flask import jsonify
+import psycopg2.extras
 
 def get_program_courses():
-    conn = get_db_connection()
-    cursor = conn.cursor()
+    conn = None
+    cursor = None
 
-    cursor.execute("CALL course.usp_get_program_with_courses(%s)", (None,))
+    try:
+        conn = get_db_connection()
 
-    # PostgreSQL procedure output fetch trick
-    cursor.execute('FETCH ALL IN "<unnamed portal 1>"')  # optional depending driver
+        # ✅ dict-based cursor
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-    # Better approach:
-    cursor.execute(
-        """
-        DO $$
-        DECLARE v_result JSON;
-        BEGIN
-            CALL course.usp_get_program_with_courses(v_result);
-            RAISE NOTICE '%', v_result;
-        END $$;
-    """
-    )
+        cursor.execute("SELECT course.fn_get_program_with_courses_wrapper() AS data;")
 
-    # Real-world → better use FUNCTION instead 😄
+        row = cursor.fetchone()
 
-    cursor.close()
-    conn.close()
+        if not row or not row["data"]:
+            return {
+                "status": "fail",
+                "message": "No program data found",
+                "data": []
+            }, 404
 
-    return jsonify(
-        {
-            "success": True,
-            "message": "Procedure executed (use FUNCTION for cleaner fetch)",
-        }
-    )
+        return {
+            "status": "success",
+            "message": "Program courses fetched successfully",
+            "data": row["data"]
+        }, 200
+
+    except Exception as e:
+        import traceback
+        print(traceback.format_exc())
+
+        return {
+            "status": "error",
+            "message": "Failed to fetch program courses",
+            "error": repr(e)
+        }, 500
+
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
