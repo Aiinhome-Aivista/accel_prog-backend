@@ -2,8 +2,8 @@ import os
 import logging
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from controller.get_courses import get_program_courses
-from controller.capstone_controller import add_capstone
+from controller.course.get_courses import get_program_courses
+from controller.course.capstone_controller import add_capstone
 import sys
 from controller.login_registration import login
 
