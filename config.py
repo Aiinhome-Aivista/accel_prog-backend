@@ -22,10 +22,10 @@ DB_CONFIG = {
 }
 
 class Config:
-    SMTP_SERVER = os.getenv("EMAIL_HOST")
-    SMTP_PORT = int(os.getenv("EMAIL_PORT", 587))
-    SMTP_USERNAME = os.getenv("EMAIL_USER")
-    SMTP_PASSWORD = os.getenv("EMAIL_PASSWORD")
+    SMTP_SERVER = os.getenv("MAIL_SERVER")
+    SMTP_PORT = int(os.getenv("MAIL_PORT"))
+    SMTP_USERNAME = os.getenv("MAIL_USERNAME")
+    SMTP_PASSWORD = os.getenv("MAIL_PASSWORD")
 
 def get_db_connection():
     conn = psycopg2.connect(**DB_CONFIG, cursor_factory=RealDictCursor)
