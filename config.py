@@ -21,11 +21,19 @@ DB_CONFIG = {
     "password": os.getenv("DB_PASSWORD"),
 }
 
+
 class Config:
-    SMTP_SERVER = os.getenv("MAIL_SERVER")
-    SMTP_PORT = os.getenv("MAIL_PORT")
-    SMTP_USERNAME = os.getenv("MAIL_USERNAME")
-    SMTP_PASSWORD = os.getenv("MAIL_PASSWORD")
+    # SMTP_SERVER = os.getenv("MAIL_SERVER")
+    # SMTP_PORT = os.getenv("MAIL_PORT")
+    # SMTP_USERNAME = os.getenv("MAIL_USERNAME")
+    # SMTP_PASSWORD = os.getenv("MAIL_PASSWORD")
+
+    MAIL_SERVER = "smtp.gmail.com"
+    MAIL_PORT = 465
+    MAIL_USE_SSL = True
+    MAIL_USE_TLS = False
+    MAIL_USERNAME = "5ynt4x.3rr0r.ss@gmail.com"
+    MAIL_PASSWORD = "ytvk rdfh mvtb zfzr"
 
 def get_db_connection():
     conn = psycopg2.connect(**DB_CONFIG, cursor_factory=RealDictCursor)

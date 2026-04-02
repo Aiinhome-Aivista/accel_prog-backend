@@ -1,5 +1,6 @@
 from config import get_db_connection
-from flask import jsonify, request
+from flask import request
+from utils.response_helper import error_response, success_response
 
 
 def verify_otp_service():
@@ -7,7 +8,7 @@ def verify_otp_service():
     email = data.get("email")
     otp = data.get("otp") or data.get("otp_code")
     if not email or not otp:
-        return jsonify({"error": "email and otp/otp_code are required"}), 400
+        return error_response("email and otp/otp_code are required", 400)
 
     conn = None
     cur = None
@@ -27,9 +28,17 @@ def verify_otp_service():
             result = row[0]
 
         conn.commit()
-        return result, 200
+        message = "OTP verified"
+        data_payload = result
+
+        if isinstance(result, dict):
+            message = result.get("message", message)
+        else:
+            data_payload = {"result": result}
+
+        return success_response(message, 200, data_payload)
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return error_response(str(e), 500)
     finally:
         if cur:
             cur.close()

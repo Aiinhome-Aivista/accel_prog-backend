@@ -1,12 +1,15 @@
 from config import get_db_connection
-from flask import jsonify, request
+from flask import request
+from utils.email_helper import send_otp_email
+from utils.response_helper import error_response, success_response
+import json
 
 
 def send_otp_service():
     data = request.get_json() or {}
     email = data.get("email")
     if not email:
-        return jsonify({"error": "email is required"}), 400
+        return error_response("email is required", 400)
 
     conn = None
     cur = None
@@ -18,17 +21,29 @@ def send_otp_service():
         row = cur.fetchone()
 
         if row is None:
-            result = {"message": "OTP sent"}
+            return error_response("OTP generation failed", 500)
         elif isinstance(row, dict):
             first_key = next(iter(row), None)
             result = row[first_key] if first_key is not None else row
         else:
             result = row[0]
 
+        if isinstance(result, str):
+            result = json.loads(result)
+
+        otp_code = None
+        if isinstance(result, dict):
+            otp_code = (result.get("data") or {}).get("otp_code")
+
+        if not otp_code:
+            return error_response("OTP not found in procedure response", 500)
+
+        send_otp_email(email, otp_code)
+
         conn.commit()
-        return result, 200
+        return success_response("OTP sent successfully", 200)
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return error_response(str(e), 500)
     finally:
         if cur:
             cur.close()
