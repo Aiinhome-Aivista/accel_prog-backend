@@ -11,7 +11,7 @@ load_dotenv()
 # Central JWT Secret (CRITICAL: Must be same for login & verification)
 JWT_SECRET = os.getenv("JWT_SECRET", "default_secret_key")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
-JWT_EXPIRY_HOURS = int(os.getenv("JWT_EXPIRY_HOURS", 24))
+JWT_EXPIRY_HOURS = os.getenv("JWT_EXPIRY_HOURS", 24)
 
 DB_CONFIG = {
     "host": os.getenv("DB_HOST"),
@@ -23,7 +23,7 @@ DB_CONFIG = {
 
 class Config:
     SMTP_SERVER = os.getenv("MAIL_SERVER")
-    SMTP_PORT = int(os.getenv("MAIL_PORT"))
+    SMTP_PORT = os.getenv("MAIL_PORT")
     SMTP_USERNAME = os.getenv("MAIL_USERNAME")
     SMTP_PASSWORD = os.getenv("MAIL_PASSWORD")
 

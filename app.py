@@ -1,11 +1,13 @@
 import os
 import logging
-from flask import Flask, jsonify, request
+from flask import Flask
 from flask_cors import CORS
 from controller.course.get_courses import get_program_courses
 from controller.course.capstone_controller import add_capstone
 import sys
-from controller.login_registration import login
+from controller.login_registration.login import login
+from controller.otp.send_otp import send_otp_service
+from controller.otp.verify_otp import verify_otp_service
 
 
 app = Flask(__name__)
@@ -38,7 +40,14 @@ def login_route():
     return login()
 
 
+@app.route(BASE_URL + "send-otp", methods=["POST"])
+def send_otp_route():
+    return send_otp_service()
 
+
+@app.route(BASE_URL + "verify-otp", methods=["POST"])
+def verify_otp_route():
+    return verify_otp_service()
 
 
 # @app.route(BASE_URL + "courses/<int:course_id>", methods=["GET"])
