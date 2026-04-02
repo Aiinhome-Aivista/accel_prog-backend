@@ -1,6 +1,6 @@
 import utils.jwt_helper as jwt_helper
 from datetime import datetime, timedelta
-from config import JWT_SECRET, JWT_ALGORITHM, JWT_EXPIRY_HOURS
+from config import JWT_SECRET, JWT_ALGORITHM, JWT_EXPIRY_HOURS, get_db_connection
 
 
 def generate_jwt(user_id):
@@ -38,6 +38,35 @@ def get_user_from_token(request):
             return None
 
         return user_id
+
+    except:
+        return None
+
+
+def authenticate_user(request):
+    auth_header = request.headers.get("Authorization")
+
+    if not auth_header:
+        return None
+
+    try:
+        token = auth_header.split(" ")[1]
+        user_id, error = verify_jwt(token)
+
+        if error:
+            return None
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        # 🔥 call procedure
+        cur.callproc("get_user_if_valid", [user_id, None])
+        result = cur.fetchone()
+
+        if not result or result[0] is None:
+            return None
+
+        return result[0]
 
     except:
         return None
