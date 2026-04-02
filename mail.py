@@ -9,15 +9,21 @@ mail = Mail(app)
 
 def send_email():
     with app.app_context():
+
+        # 🔍 Debug (remove after working)
+        print("SERVER:", app.config["SMTP_SERVER"])
+        print("PORT:", app.config["SMTP_PORT"])
+
         msg = Message(
             subject="Test Email",
-            sender=app.config["SMTP_USERNAME"],  # from your config
+            sender=app.config["SMTP_USERNAME"],
             recipients=["2002anirbanpal@gmail.com"]
         )
-        msg.body = "Hello! This email is sent using config + env."
+
+        msg.body = "Hello! This email is sent using Flask-Mail."
 
         mail.send(msg)
-        print("Email sent successfully!")
+        print("✅ Email sent successfully!")
 
 if __name__ == "__main__":
     send_email()
