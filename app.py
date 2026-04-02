@@ -27,34 +27,34 @@ def health():
     return "API is running"
 
 
-@app.route(BASE_URL + "/courses", methods=["POST"])
+@app.route(BASE_URL + "courses", methods=["POST"])
 def create_course_route():
-    return 
+    return create_course()
 
 
-@app.route(BASE_URL + "/courses", methods=["GET"])
+@app.route(BASE_URL + "courses", methods=["GET"])
 def get_courses_route():
-    return 
-    
+    return get_courses()
 
-@app.route(BASE_URL + "/courses/<int:course_id>", methods=["GET"])
+
+@app.route(BASE_URL + "courses/<int:course_id>", methods=["GET"])
 def get_course_details_route(course_id):
-    retrurn 
-    
+    return get_course_details(course_id)
 
-@app.route(BASE_URL + "/modules", methods=["POST"])
+
+@app.route(BASE_URL + "modules", methods=["POST"])
 def add_module_route():
-    return
-    
+    return add_module()
 
-@app.route(BASE_URL + "/capstones", methods=["POST"])
+
+@app.route(BASE_URL + "capstones", methods=["POST"])
 def add_capstone_route():
-    return
-    
+    return add_capstone()
+
 
 def check_db_connection():
     conn = None
-    
+
 
 if __name__ == "__main__":
     check_db_connection()

@@ -1,7 +1,9 @@
 from config import get_db_connection
+from flask import request, jsonify
 
 
-def add_module(data):
+def add_module():
+    data = request.json
     conn = get_db_connection()
     cur = conn.cursor()
 
@@ -19,4 +21,4 @@ def add_module(data):
     cur.close()
     conn.close()
 
-    return {"message": "Module added"}
+    return jsonify({"message": "Module added"})

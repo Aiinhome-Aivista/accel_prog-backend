@@ -1,7 +1,9 @@
 from config import get_db_connection
+from flask import request, jsonify
 
 
-def create_course(data):
+def create_course():
+    data = request.json
     conn = get_db_connection()
     cur = conn.cursor()
 
@@ -19,7 +21,7 @@ def create_course(data):
     cur.close()
     conn.close()
 
-    return {"message": "Course created successfully"}
+    return jsonify({"message": "Course created successfully"})
 
 
 def get_courses():
@@ -32,7 +34,7 @@ def get_courses():
     cur.close()
     conn.close()
 
-    return result
+    return jsonify(result)
 
 
 def get_course_details(course_id):
@@ -45,4 +47,4 @@ def get_course_details(course_id):
     cur.close()
     conn.close()
 
-    return result["usp_get_course_details"]
+    return jsonify(result["usp_get_course_details"])

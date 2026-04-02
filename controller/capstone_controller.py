@@ -1,7 +1,9 @@
 from config import get_db_connection
+from flask import request, jsonify
 
 
-def add_capstone(data):
+def add_capstone():
+    data = request.json
     conn = get_db_connection()
     cur = conn.cursor()
 
@@ -14,5 +16,5 @@ def add_capstone(data):
     cur.close()
     conn.close()
 
-    return {"message": "Capstone added"}
+    return jsonify({"message": "Capstone added"})
 
