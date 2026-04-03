@@ -2,24 +2,35 @@ from config import get_db_connection
 from flask import jsonify, request
 
 
-def verify_otp_service():
+def google_signin():
     data = request.get_json() or {}
+
     email = data.get("email")
-    otp = data.get("otp") or data.get("otp_code")
-    if not email or not otp:
-        return jsonify({"error": "email and otp/otp_code are required"}), 400
+    full_name = data.get("full_name")
+    is_google_verified = data.get("is_google_verified", False)
+
+    # Validation
+    if not email or not full_name:
+        return jsonify({"error": "email and full_name are required"}), 400
 
     conn = None
     cur = None
+
     try:
         conn = get_db_connection()
         cur = conn.cursor()
 
-        cur.execute("CALL login.verify_otp_sp_v1(%s, %s, %s)", (email, otp, None))
+        # Call stored procedure
+        cur.execute(
+            "CALL login.google_signin_sp(%s, %s, %s, %s)",
+            (email, full_name, is_google_verified, None)
+        )
+
         row = cur.fetchone()
 
+        # Handle response (same pattern as your OTP API)
         if row is None:
-            result = {"message": "OTP verified"}
+            result = {"message": "Google Sign-In successful"}
         elif isinstance(row, dict):
             first_key = next(iter(row), None)
             result = row[first_key] if first_key is not None else row
@@ -28,8 +39,10 @@ def verify_otp_service():
 
         conn.commit()
         return result, 200
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
     finally:
         if cur:
             cur.close()

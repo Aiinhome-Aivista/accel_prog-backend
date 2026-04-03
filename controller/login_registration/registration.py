@@ -21,7 +21,7 @@ def register():
         # 🛢 DB CONNECTION
         # =========================
         conn = get_db_connection()
-        conn.autocommit = False   # 🔥 IMPORTANT
+        conn.autocommit = False
         cur = conn.cursor(cursor_factory=RealDictCursor)
 
         cursor_name = "reg_cursor"
@@ -35,7 +35,7 @@ def register():
         # 📞 CALL PROCEDURE
         # =========================
         cur.execute("""
-            CALL registration.insert_registration_proc(%s, %s, %s, %s, %s)
+            CALL registration.insert_registration_proc_v1(%s, %s, %s, %s, %s)
         """, (Json(data), 0, "", 0, cursor_name))
 
         # =========================
@@ -44,7 +44,6 @@ def register():
         cur.execute(f'FETCH ALL FROM "{cursor_name}";')
         result = cur.fetchone()
 
-        # cursor close (good practice)
         cur.execute(f'CLOSE "{cursor_name}";')
 
         # =========================
@@ -54,9 +53,6 @@ def register():
 
         print("RESULT:", result)
 
-        # =========================
-        #  NO RESULT
-        # =========================
         if not result:
             return {
                 "status": "error",
@@ -71,20 +67,20 @@ def register():
         user_id = result.get("o_user_id")
 
         # =========================
-        # 📤 RESPONSE HANDLE
+        # 📤 RESPONSE HANDLE (UPDATED)
         # =========================
-        if status == 201:
+        if status == 200:
             return {
                 "status": "success",
                 "message": message,
                 "user_id": user_id
-            }, 201
+            }, 200
 
-        elif status == 409:
+        elif status == 400:
             return {
                 "status": "error",
                 "message": message
-            }, 409
+            }, 400
 
         else:
             return {

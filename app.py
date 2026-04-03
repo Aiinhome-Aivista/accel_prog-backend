@@ -9,7 +9,7 @@ from controller.login_registration.login import login
 from controller.otp.send_otp import send_otp_service
 from controller.otp.verify_otp import verify_otp_service
 from controller.login_registration.registration import register
-
+from controller.login_registration.google_signin import google_signin
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend communication
 
@@ -48,6 +48,10 @@ def send_otp_route():
 @app.route(BASE_URL + "verify-otp", methods=["POST"])
 def verify_otp_route():
     return verify_otp_service()
+
+@app.route(BASE_URL + "google-signin", methods=["POST"])
+def google_signin_route():
+    return google_signin()
 
 
 # @app.route(BASE_URL + "courses/<int:course_id>", methods=["GET"])
