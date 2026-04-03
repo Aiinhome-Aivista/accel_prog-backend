@@ -32,8 +32,8 @@ class Config:
     MAIL_PORT = 465
     MAIL_USE_SSL = True
     MAIL_USE_TLS = False
-    MAIL_USERNAME = "5ynt4x.3rr0r.ss@gmail.com"
-    MAIL_PASSWORD = "ytvk rdfh mvtb zfzr"
+    MAIL_USERNAME = "support@mokshpath.org"
+    MAIL_PASSWORD = "mugy xaqu evmh arkk"
 
 def get_db_connection():
     conn = psycopg2.connect(**DB_CONFIG, cursor_factory=RealDictCursor)
