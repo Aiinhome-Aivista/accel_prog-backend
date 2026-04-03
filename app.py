@@ -8,7 +8,7 @@ import sys
 from controller.login_registration.login import login
 from controller.otp.send_otp import send_otp_service
 from controller.otp.verify_otp import verify_otp_service
-
+from controller.login_registration.registration import register
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend communication
@@ -64,6 +64,10 @@ def verify_otp_route():
 def add_capstone_route():
     return add_capstone()
 
+
+@app.route(BASE_URL + "register", methods=["POST"])
+def register_route():
+    return register()
 
 def check_db_connection():
     conn = None
