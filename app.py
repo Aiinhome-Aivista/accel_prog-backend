@@ -16,6 +16,8 @@ from controller.login_registration.registration import register
 from controller.login_registration.google_signin import google_signin
 from controller.course.get_dashboard_kpi_by_user import get_dashboard_kpi_by_user
 
+from controller.course.enroll_user import enroll_user
+
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend communication
 
@@ -93,6 +95,10 @@ def get_dashboard_kpi_by_user_route():
 @app.route(BASE_URL + "get_modules_dashboard", methods=["POST"])
 def get_modules_dashboard():
     return get_modules_dashboard_service()
+
+@app.route(BASE_URL + "course_enrollment", methods=["POST"])
+def enroll_user_route():
+    return enroll_user()
 
 
 def check_db_connection():
