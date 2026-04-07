@@ -10,6 +10,7 @@ from controller.otp.send_otp import send_otp_service
 from controller.otp.verify_otp import verify_otp_service
 from controller.login_registration.registration import register
 from controller.login_registration.google_signin import google_signin
+from controller.get_user_enrolled_courses import get_user_enrolled_courses
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend communication
 
@@ -72,6 +73,10 @@ def add_capstone_route():
 @app.route(BASE_URL + "register", methods=["POST"])
 def register_route():
     return register()
+
+@app.route(BASE_URL + "get-enrolled-courses-by-user-id", methods=["GET"])
+def get_user_enrolled_courses_route():  
+    return get_user_enrolled_courses()
 
 def check_db_connection():
     conn = None
