@@ -5,12 +5,20 @@ from flask_cors import CORS
 from controller.course.get_courses import get_program_courses
 from controller.course.capstone_controller import add_capstone
 import sys
+from controller.course.get_courses_dashboard_service import (
+    get_courses_dashboard_service,
+)
+from controller.course.get_modules import get_modules_dashboard_service
 from controller.login_registration.login import login
 from controller.otp.send_otp import send_otp_service
 from controller.otp.verify_otp import verify_otp_service
 from controller.login_registration.registration import register
 from controller.login_registration.google_signin import google_signin
 from controller.get_user_enrolled_courses import get_user_enrolled_courses
+from controller.course.get_dashboard_kpi_by_user import get_dashboard_kpi_by_user
+
+from controller.course.enroll_user import enroll_user
+
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend communication
 
@@ -50,6 +58,7 @@ def send_otp_route():
 def verify_otp_route():
     return verify_otp_service()
 
+
 @app.route(BASE_URL + "google-signin", methods=["POST"])
 def google_signin_route():
     return google_signin()
@@ -77,6 +86,24 @@ def register_route():
 @app.route(BASE_URL + "get-enrolled-courses-by-user-id", methods=["GET"])
 def get_user_enrolled_courses_route():  
     return get_user_enrolled_courses()
+
+@app.route(BASE_URL + "get_courses_dashboard", methods=["GET"])
+def get_courses_dashboard_route():
+    return get_courses_dashboard_service()
+
+@app.route(BASE_URL + "dashboard_kpi_by_user", methods=["POST"])
+def get_dashboard_kpi_by_user_route():
+    return get_dashboard_kpi_by_user()
+
+
+@app.route(BASE_URL + "get_modules_dashboard", methods=["POST"])
+def get_modules_dashboard():
+    return get_modules_dashboard_service()
+
+@app.route(BASE_URL + "course_enrollment", methods=["POST"])
+def enroll_user_route():
+    return enroll_user()
+
 
 def check_db_connection():
     conn = None
