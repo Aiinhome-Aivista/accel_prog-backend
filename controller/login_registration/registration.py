@@ -35,7 +35,7 @@ def register():
         # 📞 CALL PROCEDURE
         # =========================
         cur.execute("""
-            CALL registration.insert_registration_proc_v1(%s, %s, %s, %s, %s)
+            CALL registration.insert_registration_proc_v2(%s, %s, %s, %s, %s)
         """, (Json(data), 0, "", 0, cursor_name))
 
         # =========================
