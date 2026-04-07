@@ -5,6 +5,7 @@ from flask_cors import CORS
 from controller.course.get_courses import get_program_courses
 from controller.course.capstone_controller import add_capstone
 import sys
+from controller.course.get_courses_dashboard_service import get_courses_dashboard_service
 from controller.login_registration.login import login
 from controller.otp.send_otp import send_otp_service
 from controller.otp.verify_otp import verify_otp_service
@@ -72,6 +73,12 @@ def add_capstone_route():
 @app.route(BASE_URL + "register", methods=["POST"])
 def register_route():
     return register()
+
+
+@app.route(BASE_URL + "get_courses_dashboard", methods=["GET"])
+def get_courses_dashboard_route():
+    return get_courses_dashboard_service()
+
 
 def check_db_connection():
     conn = None
