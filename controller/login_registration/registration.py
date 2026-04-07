@@ -6,98 +6,59 @@ from psycopg2.extras import Json, RealDictCursor
 def register():
     conn = None
     try:
-        # =========================
-        # 📥 GET REQUEST BODY
-        # =========================
         data = request.get_json()
-
         if not data:
-            return {
-                "status": "error",
-                "message": "Invalid request body"
-            }, 400
+            return {"status": "error", "message": "Invalid request body"}, 400
 
-        # =========================
-        # 🛢 DB CONNECTION
-        # =========================
         conn = get_db_connection()
+        # Autocommit True রাখলে BEGIN/COMMIT ম্যানুয়ালি করতে হয় না,
+        # তবে প্রোসিডিউরের ভেতর ট্রানজেকশন থাকলে এটা এভাবেই রাখুন
         conn.autocommit = False
         cur = conn.cursor(cursor_factory=RealDictCursor)
 
-        cursor_name = "reg_cursor"
+        # =========================
+        # 📞 CALL PROCEDURE (Fixed Arguments)
+        # =========================
+        # আপনার প্রোসিডিউরে শুধু ২টো প্যারামিটার: ১টি ইনপুট (JSON), ১টি ইন-আউট (result)
+        cur.execute(
+            "CALL registration.insert_registration_proc_v3(%s, %s)", (Json(data), None)
+        )
 
-        # =========================
-        # 🚀 BEGIN TRANSACTION
-        # =========================
-        cur.execute("BEGIN;")
+        # INOUT প্যারামিটারের ভ্যালু সরাসরি fetch করলেই পাওয়া যায়
+        raw_result = cur.fetchone()
 
-        # =========================
-        # 📞 CALL PROCEDURE
-        # =========================
-        cur.execute("""
-            CALL registration.insert_registration_proc_v2(%s, %s, %s, %s, %s)
-        """, (Json(data), 0, "", 0, cursor_name))
+        # PostgreSQL CALL রিটার্ন করে প্যারামিটারের নাম দিয়ে (p_result)
+        db_response = raw_result.get("p_result") if raw_result else None
 
-        # =========================
-        # 📤 FETCH RESULT
-        # =========================
-        cur.execute(f'FETCH ALL FROM "{cursor_name}";')
-        result = cur.fetchone()
-
-        cur.execute(f'CLOSE "{cursor_name}";')
-
-        # =========================
-        # 💾 COMMIT
-        # =========================
         conn.commit()
 
-        print("RESULT:", result)
-
-        if not result:
-            return {
-                "status": "error",
-                "message": "No response from procedure"
-            }, 500
+        if not db_response:
+            return {"status": "error", "message": "No response from database"}, 500
 
         # =========================
-        # ✅ EXTRACT VALUES
+        # ✅ EXTRACT VALUES (Based on your SQL JSON structure)
         # =========================
-        status = result.get("o_status")
-        message = result.get("o_message")
-        user_id = result.get("o_user_id")
+        status_code = db_response.get("status_code", 500)
+        message = db_response.get("message")
+        user_data = db_response.get("user", {})
 
-        # =========================
-        # 📤 RESPONSE HANDLE (UPDATED)
-        # =========================
-        if status == 200:
-            return {
-                "status": "success",
-                "message": message,
-                "user_id": user_id
-            }, 200
-
-        elif status == 400:
-            return {
-                "status": "error",
-                "message": message
-            }, 400
-
-        else:
-            return {
-                "status": "error",
-                "message": message or "Something went wrong"
-            }, 500
+        return {
+            "status": db_response.get("status"),
+            "message": message,
+            "user_id": user_data.get("user_id"),
+            "full_name": user_data.get("full_name"),
+            "role_id": user_data.get("role_id"),
+            "meta": db_response.get("meta"),
+        }, status_code
 
     except Exception as e:
         if conn:
             conn.rollback()
-
         print("REAL ERROR:", repr(e))
-
         return {
             "status": "error",
             "message": "Internal Server Error",
-            "error": str(e)
+            "error": str(e),
         }, 500
 
     finally:
