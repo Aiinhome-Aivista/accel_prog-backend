@@ -11,6 +11,7 @@ from controller.otp.send_otp import send_otp_service
 from controller.otp.verify_otp import verify_otp_service
 from controller.login_registration.registration import register
 from controller.login_registration.google_signin import google_signin
+from controller.course.get_dashboard_kpi_by_user import get_dashboard_kpi_by_user
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend communication
 
@@ -78,6 +79,10 @@ def register_route():
 @app.route(BASE_URL + "get_courses_dashboard", methods=["GET"])
 def get_courses_dashboard_route():
     return get_courses_dashboard_service()
+
+@app.route(BASE_URL + "dashboard_kpi_by_user", methods=["POST"])
+def get_dashboard_kpi_by_user_route():
+    return get_dashboard_kpi_by_user()
 
 
 def check_db_connection():
