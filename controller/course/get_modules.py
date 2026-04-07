@@ -1,8 +1,14 @@
 from config import get_db_connection
-from flask import jsonify
+from flask import jsonify, request
 
 
-def get_courses_dashboard_service():
+def get_modules_dashboard_service():
+    data = request.get_json() or {}
+
+    course_id = data.get("course_id")
+    if not course_id:
+        return jsonify({"status": "error", "message": "course_id is required"}), 400
+
     conn = None
     cur = None
 
@@ -10,8 +16,8 @@ def get_courses_dashboard_service():
         conn = get_db_connection()
         cur = conn.cursor()
 
-        
-        cur.execute("CALL course.get_all_courses_dashboard(%s)", (None,))
+        # CALL procedure
+        cur.execute("CALL course.get_modules_with_days(%s, %s)", (course_id, None))
 
         row = cur.fetchone()
 
