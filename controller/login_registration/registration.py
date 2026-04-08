@@ -6,55 +6,59 @@ from psycopg2.extras import Json, RealDictCursor
 def register():
     conn = None
     try:
+        # =========================
+        # 📥 GET REQUEST BODY
+        # =========================
         data = request.get_json()
+
         if not data:
             return {"status": "error", "message": "Invalid request body"}, 400
 
+        # =========================
+        # 🛢 DB CONNECTION
+        # =========================
         conn = get_db_connection()
-        # Autocommit True রাখলে BEGIN/COMMIT ম্যানুয়ালি করতে হয় না,
-        # তবে প্রোসিডিউরের ভেতর ট্রানজেকশন থাকলে এটা এভাবেই রাখুন
         conn.autocommit = False
         cur = conn.cursor(cursor_factory=RealDictCursor)
 
         # =========================
-        # 📞 CALL PROCEDURE (Fixed Arguments)
+        # 📞 CALL PROCEDURE
         # =========================
-        # আপনার প্রোসিডিউরে শুধু ২টো প্যারামিটার: ১টি ইনপুট (JSON), ১টি ইন-আউট (result)
+        # v3 অনুযায়ী প্যারামিটার: (json, status, message, user_id, cursor)
+        # এখানে %s গুলোর জন্য আর্গুমেন্ট পাস করা হচ্ছে
         cur.execute(
-            "CALL registration.insert_registration_proc_v3(%s, %s)", (Json(data), None)
+            "CALL registration.insert_registration_proc_v3(%s, %s, %s, %s, %s)",
+            (Json(data), 0, "", 0, "reg_cursor"),
         )
 
-        # INOUT প্যারামিটারের ভ্যালু সরাসরি fetch করলেই পাওয়া যায়
-        raw_result = cur.fetchone()
+        # =========================
+        # 📤 FETCH FROM REFCURSOR
+        # =========================
+        # প্রোসিডিউর এর ভেতরে থাকা 'ref' কার্সার থেকে ডাটা রিড করা
+        cur.execute('FETCH ALL FROM "reg_cursor";')
+        result = cur.fetchone()
 
-        # PostgreSQL CALL রিটার্ন করে প্যারামিটারের নাম দিয়ে (p_result)
-        db_response = raw_result.get("p_result") if raw_result else None
-
+        cur.execute('CLOSE "reg_cursor";')
         conn.commit()
 
-        if not db_response:
-            return {"status": "error", "message": "No response from database"}, 500
+        if not result:
+            return {"status": "error", "message": "No response from procedure"}, 500
 
         # =========================
-        # ✅ EXTRACT VALUES (Based on your SQL JSON structure)
+        # ✅ DIRECT RESPONSE FROM SP
         # =========================
-        status_code = db_response.get("status_code", 500)
-        message = db_response.get("message")
-        user_data = db_response.get("user", {})
+        # প্রোসিডিউরের SELECT স্টেটমেন্টে যে নামগুলো (alias) দিয়েছেন, এখানে সেগুলোই আসবে।
+        # আপনার SP অনুযায়ী: status, message, user_id, full_name, role_id, access_control
 
-        return {
-            "status": db_response.get("status"),
-            "message": message,
-            "user_id": user_data.get("user_id"),
-            "full_name": user_data.get("full_name"),
-            "role_id": user_data.get("role_id"),
-            "meta": db_response.get("meta"),
-        }, status_code
+        status_code = result.get("status", 200)  # SP থেকে আসা স্ট্যাটাস কোড
+
+        # আপনি চেয়েছেন এপিআই রেসপন্স মডিফাই না করে সরাসরি SP রেসপন্স দেখাতে
+        return result, status_code
 
     except Exception as e:
         if conn:
             conn.rollback()
-        print("REAL ERROR:", repr(e))
+        print("REGISTRATION ERROR:", repr(e))
         return {
             "status": "error",
             "message": "Internal Server Error",
