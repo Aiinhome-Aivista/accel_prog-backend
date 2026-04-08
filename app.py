@@ -23,7 +23,8 @@ from controller.course.get_dashboard_kpi_by_user import get_dashboard_kpi_by_use
 from controller.course.enroll_user import enroll_user
 from controller.course.get_grades_info_by_user import get_grades_info_by_user_service
 from controller.course.get_user_recent_activity import get_user_recent_activity
-
+from controller.admin.admin_generate_otp import admin_generate_otp
+from controller.admin.admin_verify_otp import admin_verify_otp
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend communication
 
@@ -121,6 +122,14 @@ def get_grades_info_by_user_route():
 def get_user_recent_activity_route():
     return get_user_recent_activity()
 
+
+@app.route(BASE_URL + "admin_generate_otp", methods=["POST"])
+def admin_generate_otp_route(): 
+    return admin_generate_otp()
+
+@app.route(BASE_URL + "admin_verify_otp", methods=["POST"])
+def admin_verify_otp_route():   
+    return admin_verify_otp()
 
 def check_db_connection():
     conn = None
