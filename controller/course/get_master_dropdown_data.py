@@ -10,7 +10,7 @@ def get_master_dropdown_data():
     try:
         # 🔹 CALL procedure
         cursor.execute(
-            "CALL course.get_master_dropdown_data(%s::JSONB);",
+            "CALL course.get_master_dropdown_data_v1(%s::JSONB);",
             (None,)
         )
 
