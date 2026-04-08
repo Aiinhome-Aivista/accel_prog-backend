@@ -14,7 +14,10 @@ from controller.otp.send_otp import send_otp_service
 from controller.otp.verify_otp import verify_otp_service
 from controller.login_registration.registration import register
 from controller.login_registration.google_signin import google_signin
+
 from controller.get_user_enrolled_courses import get_user_enrolled_courses
+from controller.course.get_user_completed_courses import get_user_completed_courses
+
 from controller.course.get_dashboard_kpi_by_user import get_dashboard_kpi_by_user
 
 from controller.course.enroll_user import enroll_user
@@ -86,6 +89,10 @@ def register_route():
 @app.route(BASE_URL + "get-enrolled-courses-by-user-id", methods=["GET"])
 def get_user_enrolled_courses_route():  
     return get_user_enrolled_courses()
+
+@app.route(BASE_URL + "get-completed-courses-by-user-id", methods=["GET"])
+def get_user_completed_courses_route():
+    return get_user_completed_courses()
 
 @app.route(BASE_URL + "get_courses_dashboard", methods=["GET"])
 def get_courses_dashboard_route():
