@@ -27,6 +27,7 @@ from controller.admin.admin_generate_otp import admin_generate_otp
 from controller.admin.admin_verify_otp import admin_verify_otp
 from controller.course.get_flashcards import get_flashcards
 from controller.course.get_master_dropdown_data import get_master_dropdown_data
+from controller.course.save_content import save_content
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend communication
 
@@ -140,6 +141,10 @@ def admin_verify_otp_route():
 @app.route(BASE_URL + "get_master_dropdown_data", methods=["GET"])
 def get_master_dropdown_data_route():
     return get_master_dropdown_data()
+
+@app.route(BASE_URL + "save_content", methods=["POST"])
+def save_content_route():   
+    return save_content()
 
 def check_db_connection():
     conn = None

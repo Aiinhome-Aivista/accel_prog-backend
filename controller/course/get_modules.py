@@ -21,14 +21,14 @@ def get_modules_dashboard_service():
         cur.execute("BEGIN")
 
         cur.execute(
-            "CALL course.get_modules_with_days_v2(%s, %s, %s)",
+            "CALL course.get_modules_with_days_v3(%s, %s, %s)",
             (course_id, user_id, 'mycursor')
         )
 
         cur.execute("FETCH ALL FROM mycursor")
         rows = cur.fetchall()
 
-        print("DEBUG:", rows)
+        # print("DEBUG:", rows)
 
         result = []
         if rows:
