@@ -36,7 +36,7 @@ def get_user_completed_courses():
         if not row or not row.get("result"):
             return {
                 "status": "success",
-                "message": "You have not completed any courses yet",
+                "message": "No completed courses yet. Keep going — your first certificate is within reach!",
                 "data": []
             }, 200
 
