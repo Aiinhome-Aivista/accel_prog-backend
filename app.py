@@ -18,7 +18,7 @@ from controller.get_user_enrolled_courses import get_user_enrolled_courses
 from controller.course.get_dashboard_kpi_by_user import get_dashboard_kpi_by_user
 
 from controller.course.enroll_user import enroll_user
-
+from controller.course.get_grades_info_by_user import get_grades_info_by_user_service
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend communication
 
@@ -103,6 +103,10 @@ def get_modules_dashboard():
 @app.route(BASE_URL + "course_enrollment", methods=["POST"])
 def enroll_user_route():
     return enroll_user()
+
+@app.route(BASE_URL + "grades_info_by_user", methods=["GET"])
+def get_grades_info_by_user_route():
+    return get_grades_info_by_user_service()
 
 
 def check_db_connection():
