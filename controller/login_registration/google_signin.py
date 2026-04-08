@@ -22,7 +22,7 @@ def google_signin():
 
         # Call stored procedure
         cur.execute(
-            "CALL login.google_signin_sp(%s, %s, %s, %s)",
+            "CALL login.google_signin_sp_v5(%s, %s, %s, %s)",
             (email, full_name, is_google_verified, None)
         )
 
