@@ -22,6 +22,8 @@ from controller.course.get_dashboard_kpi_by_user import get_dashboard_kpi_by_use
 
 from controller.course.enroll_user import enroll_user
 from controller.course.get_grades_info_by_user import get_grades_info_by_user_service
+from controller.course.get_user_recent_activity import get_user_recent_activity
+
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend communication
 
@@ -114,6 +116,10 @@ def enroll_user_route():
 @app.route(BASE_URL + "grades_info_by_user", methods=["GET"])
 def get_grades_info_by_user_route():
     return get_grades_info_by_user_service()
+
+@app.route(BASE_URL + "get-user-recent-activity", methods=["GET"])
+def get_user_recent_activity_route():
+    return get_user_recent_activity()
 
 
 def check_db_connection():
