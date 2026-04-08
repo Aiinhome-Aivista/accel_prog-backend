@@ -31,7 +31,7 @@ def get_user_enrolled_courses():
         if not row or not row.get("result"):
             return {
                 "status": "success",
-                "message": "No enrolled courses found",
+                "message": "No completed courses yet. Keep going — your first certificate is within reach!",
                 "data": []
             }, 200
 
