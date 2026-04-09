@@ -3,6 +3,7 @@ import logging
 from flask import Flask
 from flask import send_from_directory
 from flask_cors import CORS
+from controller.admin.manage_assesment import manage_assessment_questions
 from controller.course.assessment_questions import get_assessment_questions_v2
 from controller.course.get_courses import get_program_courses
 from controller.course.capstone_controller import add_capstone
@@ -196,6 +197,12 @@ def submit_cohort_answer_route():
 @app.route(BASE_URL + "get-assessment-questions", methods=["GET"])
 def get_assessment_questions_route():
     return get_assessment_questions_v2()
+
+
+@app.route(BASE_URL + "manage-assessment-questions", methods=["POST"])
+def manage_questions():
+    return manage_assessment_questions()
+
 
 def check_db_connection():
     conn = None
