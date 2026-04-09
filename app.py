@@ -39,6 +39,7 @@ from controller.home.get_course_home_timeline import get_course_home_timeline
 from controller.admin.get_all_contents import get_all_contents
 from controller.course.complete_subtopic_module_course_wise_by_user import complete_subtopic_module_course_wise_by_user
 from controller.course.submit_user_answer import submit_user_answer
+from controller.course.submit_cohort_answer import submit_cohort_answer
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend communication
 
@@ -190,6 +191,9 @@ def complete_subtopic_module_course_wise_by_user_route():
 def submit_user_answer_route():
     return submit_user_answer()
 
+@app.route(BASE_URL + "submit_cohort_answer", methods=["POST"])
+def submit_cohort_answer_route():
+    return submit_cohort_answer()
 @app.route(BASE_URL + "get-assessment-questions", methods=["GET"])
 def get_assessment_questions_route():
     return get_assessment_questions_v2()
