@@ -1,6 +1,7 @@
 import os
 import logging
 from flask import Flask
+from flask import send_from_directory
 from flask_cors import CORS
 from controller.course.get_courses import get_program_courses
 from controller.course.capstone_controller import add_capstone
@@ -29,6 +30,8 @@ from controller.course.get_flashcards import get_flashcards
 from controller.course.get_master_dropdown_data import get_master_dropdown_data
 from controller.course.save_content import save_content
 from controller.course.get_course_learning_content_by_user import get_course_learning_content_by_user
+
+from controller.course.get_course_videos import get_course_videos
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend communication
 
@@ -149,7 +152,15 @@ def save_content_route():
 
 @app.route(BASE_URL + "get_course_learning_content_by_user", methods=["POST"])  
 def get_course_learning_content_by_user_route():
-    return get_course_learning_content_by_user()    
+    return get_course_learning_content_by_user()  
+
+@app.route(BASE_URL + "get_course_videos", methods=["GET"])
+def get_course_videos_route():
+    return get_course_videos() 
+
+@app.route("/videos/<path:filename>")
+def serve_video(filename):
+    return send_from_directory("static/videos", filename) 
 
 def check_db_connection():
     conn = None
