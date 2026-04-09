@@ -32,6 +32,11 @@ from controller.course.save_content import save_content
 from controller.course.get_course_learning_content_by_user import get_course_learning_content_by_user
 
 from controller.course.get_course_videos import get_course_videos
+from controller.home.get_course_home_overview import get_course_home_overview
+from controller.home.get_course_home_timeline import get_course_home_timeline
+from controller.admin.get_all_contents import get_all_contents
+from controller.course.complete_subtopic_module_course_wise_by_user import complete_subtopic_module_course_wise_by_user
+from controller.course.submit_user_answer import submit_user_answer
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend communication
 
@@ -161,6 +166,27 @@ def get_course_videos_route():
 @app.route("/videos/<path:filename>")
 def serve_video(filename):
     return send_from_directory("static/videos", filename) 
+
+
+@app.route(BASE_URL + "course_home_overview", methods=["POST"])
+def course_home_overview_route():
+    return get_course_home_overview()
+
+
+@app.route(BASE_URL + "course_home_timeline", methods=["POST"])
+def course_home_timeline_route():
+    return get_course_home_timeline()
+@app.route(BASE_URL + "admin/get_all_contents", methods=["GET"])
+def get_all_contents_route():
+    return get_all_contents()
+
+@app.route(BASE_URL + "complete_subtopic_module_course_wise_by_user", methods=["POST"])
+def complete_subtopic_module_course_wise_by_user_route():
+    return complete_subtopic_module_course_wise_by_user()
+
+@app.route(BASE_URL + "submit_user_answer", methods=["POST"])
+def submit_user_answer_route():
+    return submit_user_answer()
 
 def check_db_connection():
     conn = None
