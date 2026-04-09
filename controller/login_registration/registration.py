@@ -50,7 +50,7 @@ def register():
         # প্রোসিডিউরের SELECT স্টেটমেন্টে যে নামগুলো (alias) দিয়েছেন, এখানে সেগুলোই আসবে।
         # আপনার SP অনুযায়ী: status, message, user_id, full_name, role_id, access_control
 
-        status_code = result.get("status", 200)  # SP থেকে আসা স্ট্যাটাস কোড
+        status_code = result.get("status_code", 200)  # SP থেকে আসা স্ট্যাটাস কোড
 
         # আপনি চেয়েছেন এপিআই রেসপন্স মডিফাই না করে সরাসরি SP রেসপন্স দেখাতে
         return result, status_code
