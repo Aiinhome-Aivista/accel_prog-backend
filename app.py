@@ -31,6 +31,8 @@ from controller.course.save_content import save_content
 from controller.course.get_course_learning_content_by_user import get_course_learning_content_by_user
 from controller.home.get_course_home_overview import get_course_home_overview
 from controller.home.get_course_home_timeline import get_course_home_timeline
+from controller.admin.get_all_contents import get_all_contents
+from controller.course.complete_subtopic_module_course_wise_by_user import complete_subtopic_module_course_wise_by_user
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend communication
 
@@ -162,6 +164,13 @@ def course_home_overview_route():
 @app.route(BASE_URL + "course_home_timeline", methods=["POST"])
 def course_home_timeline_route():
     return get_course_home_timeline()
+@app.route(BASE_URL + "admin/get_all_contents", methods=["GET"])
+def get_all_contents_route():
+    return get_all_contents()
+
+@app.route(BASE_URL + "complete_subtopic_module_course_wise_by_user", methods=["POST"])
+def complete_subtopic_module_course_wise_by_user_route():
+    return complete_subtopic_module_course_wise_by_user()
 
 def check_db_connection():
     conn = None
