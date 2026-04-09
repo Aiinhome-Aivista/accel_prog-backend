@@ -29,6 +29,8 @@ from controller.course.get_flashcards import get_flashcards
 from controller.course.get_master_dropdown_data import get_master_dropdown_data
 from controller.course.save_content import save_content
 from controller.course.get_course_learning_content_by_user import get_course_learning_content_by_user
+from controller.home.get_course_home_overview import get_course_home_overview
+from controller.home.get_course_home_timeline import get_course_home_timeline
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend communication
 
@@ -150,6 +152,16 @@ def save_content_route():
 @app.route(BASE_URL + "get_course_learning_content_by_user", methods=["POST"])  
 def get_course_learning_content_by_user_route():
     return get_course_learning_content_by_user()    
+
+
+@app.route(BASE_URL + "course_home_overview", methods=["POST"])
+def course_home_overview_route():
+    return get_course_home_overview()
+
+
+@app.route(BASE_URL + "course_home_timeline", methods=["POST"])
+def course_home_timeline_route():
+    return get_course_home_timeline()
 
 def check_db_connection():
     conn = None
