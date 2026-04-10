@@ -21,7 +21,7 @@ def get_modules_dashboard_service():
         cur.execute("BEGIN")
 
         cur.execute(
-            "CALL course.get_modules_with_days_v3(%s, %s, %s)",
+            "CALL course.get_modules_with_days_v4(%s, %s, %s)",
             (course_id, user_id, 'mycursor')
         )
 
