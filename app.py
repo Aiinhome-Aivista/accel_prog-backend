@@ -40,6 +40,7 @@ from controller.admin.get_all_contents import get_all_contents
 from controller.course.complete_subtopic_module_course_wise_by_user import complete_subtopic_module_course_wise_by_user
 from controller.course.submit_user_answer import submit_user_answer
 from controller.course.submit_cohort_answer import submit_cohort_answer
+from controller.course.project_upload_by_user import upload_project
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend communication
 
@@ -202,6 +203,10 @@ def get_assessment_questions_route():
 @app.route(BASE_URL + "manage-assessment-questions", methods=["POST"])
 def manage_questions():
     return manage_assessment_questions()
+
+@app.route(BASE_URL + "upload_project_submission_by_user", methods=["POST"])
+def upload_project_submission_route():
+    return upload_project()
 
 
 def check_db_connection():
