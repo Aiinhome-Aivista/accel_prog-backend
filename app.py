@@ -43,7 +43,7 @@ from controller.course.submit_cohort_answer import submit_cohort_answer
 from controller.course.project_upload_by_user import upload_project
 from controller.course.get_user_weekly_streak import get_user_weekly_streak 
 from controller.course.get_all_video_mapping import get_all_course_video_mapping
-
+from controller.course.save_course_video import save_course_video
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend communication
 
@@ -218,6 +218,10 @@ def get_user_weekly_streak_route():
 @app.route(BASE_URL + "admin/get_course_video_mapping", methods=["GET"])
 def admin_get_course_video_mapping_route():
     return get_all_course_video_mapping()
+
+@app.route(BASE_URL + "admin/save_course_video", methods=["POST"])
+def admin_save_course_video_route():
+    return save_course_video()
 
 
 def check_db_connection():
