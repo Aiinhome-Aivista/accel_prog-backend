@@ -41,3 +41,5 @@ def verify_otp_service():
     finally:
         if conn:
             conn.close()
+        if cur:
+            cur.close()    

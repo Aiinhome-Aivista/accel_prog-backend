@@ -7,7 +7,7 @@ def register():
     conn = None
     try:
         # =========================
-        # 📥 GET REQUEST BODY
+        #  GET REQUEST BODY
         # =========================
         data = request.get_json()
 
@@ -22,19 +22,17 @@ def register():
         cur = conn.cursor(cursor_factory=RealDictCursor)
 
         # =========================
-        # 📞 CALL PROCEDURE
+        #  CALL PROCEDURE
         # =========================
-        # v3 অনুযায়ী প্যারামিটার: (json, status, message, user_id, cursor)
-        # এখানে %s গুলোর জন্য আর্গুমেন্ট পাস করা হচ্ছে
+    
         cur.execute(
             "CALL registration.insert_registration_proc_v3(%s, %s, %s, %s, %s)",
             (Json(data), 0, "", 0, "reg_cursor"),
         )
 
         # =========================
-        # 📤 FETCH FROM REFCURSOR
+        #  FETCH FROM REFCURSOR
         # =========================
-        # প্রোসিডিউর এর ভেতরে থাকা 'ref' কার্সার থেকে ডাটা রিড করা
         cur.execute('FETCH ALL FROM "reg_cursor";')
         result = cur.fetchone()
 
@@ -45,14 +43,11 @@ def register():
             return {"status": "error", "message": "No response from procedure"}, 500
 
         # =========================
-        # ✅ DIRECT RESPONSE FROM SP
+        #  DIRECT RESPONSE FROM SP
         # =========================
-        # প্রোসিডিউরের SELECT স্টেটমেন্টে যে নামগুলো (alias) দিয়েছেন, এখানে সেগুলোই আসবে।
-        # আপনার SP অনুযায়ী: status, message, user_id, full_name, role_id, access_control
 
-        status_code = result.get("status_code", 200)  # SP থেকে আসা স্ট্যাটাস কোড
+        status_code = result.get("status_code", 200) 
 
-        # আপনি চেয়েছেন এপিআই রেসপন্স মডিফাই না করে সরাসরি SP রেসপন্স দেখাতে
         return result, status_code
 
     except Exception as e:
@@ -68,3 +63,5 @@ def register():
     finally:
         if conn:
             conn.close()
+        if cur:
+            cur.close()    
