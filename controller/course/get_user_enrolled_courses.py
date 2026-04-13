@@ -3,15 +3,15 @@
 # import psycopg2.extras
 
 
-# def get_user_recent_activity():
-
+# def get_user_enrolled_courses():
+    
 #     user_id = request.args.get("user_id")
-
+    
 #     if not user_id:
 #         return {
 #             "status": "fail",
 #             "message": "user_id is required",
-#             "data": {}
+#             "data": []
 #         }, 400
 
 #     conn = None
@@ -19,67 +19,58 @@
 
 #     try:
 #         conn = get_db_connection()
+        
+#         cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-#         cursor = conn.cursor(
-#             cursor_factory=psycopg2.extras.RealDictCursor
-#         )
-
-#         # Calling stored procedure
-#         cursor.execute(
-#             "CALL login.get_user_recent_activity_v1(%s, %s);",
-#             (user_id, None)
-#         )
-
+#         # Stored Procedure (INOUT p_user_id, OUT result)
+#         cursor.execute("CALL course.get_user_enrolled_courses(%s, %s);", (user_id, None))
+        
 #         row = cursor.fetchone()
 
-#         # If SP returns nothing (rare case)
+#         # Check if result is empty or not present
 #         if not row or not row.get("result"):
 #             return {
 #                 "status": "success",
-#                 "data": {}
+#                 "message": "No completed courses yet. Keep going — your first certificate is within reach!",
+#                 "data": []
 #             }, 200
 
-#         # Return EXACT stored procedure response
 #         return {
 #             "status": "success",
+#             "message": "User enrolled courses fetched successfully",
 #             "data": row["result"]
 #         }, 200
 
 #     except Exception as e:
 #         import traceback
 #         print(traceback.format_exc())
-
 #         return {
 #             "status": "error",
-#             "message": "Failed to fetch recent activity",
+#             "message": "Failed to fetch enrolled courses",
 #             "error": repr(e)
 #         }, 500
-
 #     finally:
-#         if cursor:
-#             cursor.close()
-
-#         if conn:
-#             conn.close()
+#         if cursor: cursor.close()
+#         if conn: conn.close()
 
 
 
 from flask import request, jsonify
 from config import get_db_connection
 import psycopg2.extras
-from utils.logging_service import log_api   # ✅ import add
+from utils.logging_service import log_api   # import add
 
 
-@log_api("get-user-recent-activity")   # ✅ decorator add
-def get_user_recent_activity():
-
+@log_api("get-user-enrolled-courses")   # decorator add
+def get_user_enrolled_courses():
+    
     user_id = request.args.get("user_id")
-
+    
     if not user_id:
         return {
             "status": "fail",
             "message": "user_id is required",
-            "data": {}
+            "data": []
         }, 400
 
     conn = None
@@ -87,45 +78,41 @@ def get_user_recent_activity():
 
     try:
         conn = get_db_connection()
+        
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-        cursor = conn.cursor(
-            cursor_factory=psycopg2.extras.RealDictCursor
-        )
-
-        # Calling stored procedure
+        # Stored Procedure (INOUT p_user_id, OUT result)
         cursor.execute(
-            "CALL login.get_user_recent_activity_v1(%s, %s);",
+            "CALL course.get_user_enrolled_courses(%s, %s);",
             (user_id, None)
         )
-
+        
         row = cursor.fetchone()
 
-        # If SP returns nothing (rare case)
+        # Check if result is empty or not present
         if not row or not row.get("result"):
             return {
                 "status": "success",
-                "data": {}
+                "message": "No completed courses yet. Keep going — your first certificate is within reach!",
+                "data": []
             }, 200
 
-        # Return EXACT stored procedure response
         return {
             "status": "success",
+            "message": "User enrolled courses fetched successfully",
             "data": row["result"]
         }, 200
 
     except Exception as e:
         import traceback
         print(traceback.format_exc())
-
         return {
             "status": "error",
-            "message": "Failed to fetch recent activity",
+            "message": "Failed to fetch enrolled courses",
             "error": repr(e)
         }, 500
-
     finally:
         if cursor:
             cursor.close()
-
         if conn:
             conn.close()

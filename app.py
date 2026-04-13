@@ -1,6 +1,7 @@
+from http.client import HTTPException
 import os
 import logging
-from flask import Flask
+from flask import Flask, jsonify, request
 from flask import send_from_directory
 from flask_cors import CORS
 from controller.admin.manage_assesment import manage_assessment_questions
@@ -11,6 +12,7 @@ import sys
 from controller.course.get_courses_dashboard_service import (
     get_courses_dashboard_service,
 )
+from logger_config import logger
 from controller.course.get_modules import get_modules_dashboard_service
 from controller.login_registration.login import login
 from controller.otp.send_otp import send_otp_service
@@ -18,7 +20,7 @@ from controller.otp.verify_otp import verify_otp_service
 from controller.login_registration.registration import register
 from controller.login_registration.google_signin import google_signin
 
-from controller.get_user_enrolled_courses import get_user_enrolled_courses
+from controller.course.get_user_enrolled_courses import get_user_enrolled_courses
 from controller.course.get_user_completed_courses import get_user_completed_courses
 
 from controller.course.get_dashboard_kpi_by_user import get_dashboard_kpi_by_user
@@ -32,7 +34,7 @@ from controller.course.get_flashcards import get_flashcards
 from controller.course.get_master_dropdown_data import get_master_dropdown_data
 from controller.course.save_content import save_content
 from controller.course.get_course_learning_content_by_user import get_course_learning_content_by_user
-
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from controller.course.get_course_videos import get_course_videos
 from controller.home.get_course_home_overview import get_course_home_overview
 from controller.home.get_course_home_timeline import get_course_home_timeline
@@ -42,7 +44,12 @@ from controller.course.submit_user_answer import submit_user_answer
 from controller.course.submit_cohort_answer import submit_cohort_answer
 from controller.course.project_upload_by_user import upload_project
 from controller.course.get_user_weekly_streak import get_user_weekly_streak 
+from logger_config import logger
+from controller.course.get_courses_dashboard_service import (
+    get_courses_dashboard_service,
+)
 app = Flask(__name__)
+FlaskInstrumentor().instrument_app(app)
 CORS(app)  # Enable CORS for frontend communication
 
 # Set up logging
@@ -50,6 +57,171 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 BASE_URL = "/api/v1/"
+
+####################
+@app.after_request
+def log_response(response):
+    logger.info(
+        "Outgoing response",
+        extra={
+            "custom_dimensions": {
+                "status": response.status,
+                "endpoint": request.endpoint
+            }
+        }
+    )
+    return response
+
+
+# 🔹 Response logging
+# @app.after_request
+# def log_response(response):
+#     logger.info(f"[RESPONSE] Status={response.status}")
+#     return response
+
+@app.after_request
+def log_response(response):
+    logger.info(
+        "Outgoing response",
+        extra={
+            "custom_dimensions": {
+                "status": response.status,
+                "endpoint": request.endpoint
+            }
+        }
+    )
+    return response
+
+
+# 🔹 Global error handler
+# @app.errorhandler(Exception)
+# def handle_exception(e):
+#     logger.error("[APP ERROR]", exc_info=True)
+#     return jsonify({
+#         "status": "error",
+#         "message": "Internal Server Error"
+#     }), 500
+
+
+# @app.errorhandler(Exception)
+# def handle_exception(e):
+#     logger.error(f"[APP ERROR] {str(e)}", exc_info=True)
+#     return jsonify({
+#         "status": "error",
+#         "message": str(e)  # ✅ actual error 
+#     }), 500
+
+
+# @app.errorhandler(Exception)
+# def handle_exception(e):
+#     logger.exception(
+#         "Unhandled Exception",
+#         extra={
+#             "custom_dimensions": {
+#                 "endpoint": request.endpoint,
+#                 "url": request.url
+#             }
+#         }
+#     )
+#     return jsonify({
+#         "status": "error",
+#         "message": str(e)
+#     }), 500
+
+
+# # ✅ HTTP Errors (400, 404, 405 etc.)
+# @app.errorhandler(HTTPException)
+# def handle_http_exception(e):
+#     logger.error(
+#         f"HTTP ERROR {e.code} - {e.name}",
+#         extra={
+#             "custom_dimensions": {
+#                 "endpoint": request.endpoint,
+#                 "url": request.url,
+#                 "status_code": e.code,
+#                 "error": e.description
+#             }
+#         }
+#     )
+
+#     return jsonify({
+#         "status": "fail",
+#         "message": e.description
+#     }), e.code
+
+
+# # ✅ General Exceptions (500 etc.)
+# @app.errorhandler(Exception)
+# def handle_exception(e):
+#     logger.exception(
+#         "Unhandled Exception",
+#         extra={
+#             "custom_dimensions": {
+#                 "endpoint": request.endpoint,
+#                 "url": request.url
+#             }
+#         }
+#     )
+
+#     return jsonify({
+#         "status": "error",
+#         "message": str(e)
+#     }), 500
+
+
+@app.errorhandler(HTTPException)
+def handle_http_exception(e):
+    logger.error(
+        f"HTTP ERROR {e.code} - {e.name}",
+        extra={
+            "custom_dimensions": {
+                "type": "HTTP_ERROR",
+                "endpoint": request.endpoint,
+                "url": request.url,
+                "method": request.method,
+                "status_code": e.code,
+                "error": e.description
+            }
+        }
+    )
+
+    return jsonify({
+        "status": "fail",
+        "message": e.description
+    }), e.code
+
+
+# (optional but recommended)
+@app.errorhandler(Exception)
+def handle_exception(e):
+    logger.exception(
+        "UNHANDLED EXCEPTION",
+        extra={
+            "custom_dimensions": {
+                "type": "SYSTEM_ERROR",
+                "endpoint": request.endpoint,
+                "url": request.url,
+                "method": request.method,
+                "error": str(e)
+            }
+        }
+    )
+
+    return jsonify({
+        "status": "error",
+        "message": "Internal server error"
+    }), 500
+
+
+
+##########################
+
+
+
+
+###################
+
+
 
 
 @app.route("/")
@@ -181,6 +353,7 @@ def course_home_overview_route():
 @app.route(BASE_URL + "course_home_timeline", methods=["POST"])
 def course_home_timeline_route():
     return get_course_home_timeline()
+    
 @app.route(BASE_URL + "admin/get_all_contents", methods=["GET"])
 def get_all_contents_route():
     return get_all_contents()
