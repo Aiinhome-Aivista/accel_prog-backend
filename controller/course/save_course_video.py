@@ -23,15 +23,13 @@ def save_course_video():
     # Validation
     if not all([
         course_id,
-        module_id,
-        subtopic_id,
         video_title,
         user_id,
         file
     ]):
         return jsonify({
             "status": "error",
-            "message": "course_id, module_id, subtopic_id, video_title, user_id and video file are required"
+            "message": "course_id, video_title, user_id and video file are required"
         }), 400
 
     conn = None
