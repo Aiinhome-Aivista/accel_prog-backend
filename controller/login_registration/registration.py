@@ -81,7 +81,9 @@ from utils.logging_service import log_api
 def register():
     conn = None
     try:
-        # GET REQUEST BODY
+        # =========================
+        #  GET REQUEST BODY
+        # =========================
         data = request.get_json()
 
         if not data:
@@ -92,13 +94,18 @@ def register():
         conn.autocommit = False
         cur = conn.cursor(cursor_factory=RealDictCursor)
 
-        # CALL PROCEDURE
+        # =========================
+        #  CALL PROCEDURE
+        # =========================
+    
         cur.execute(
             "CALL registration.insert_registration_proc_v3(%s, %s, %s, %s, %s)",
             (Json(data), 0, "", 0, "reg_cursor"),
         )
 
-        # FETCH FROM REFCURSOR
+        # =========================
+        #  FETCH FROM REFCURSOR
+        # =========================
         cur.execute('FETCH ALL FROM "reg_cursor";')
         result = cur.fetchone()
 
@@ -108,7 +115,11 @@ def register():
         if not result:
             return {"status": "error", "message": "No response from procedure"}, 500
 
-        status_code = result.get("status_code", 200)
+        # =========================
+        #  DIRECT RESPONSE FROM SP
+        # =========================
+
+        status_code = result.get("status_code", 200) 
 
         return result, status_code
 
@@ -125,3 +136,5 @@ def register():
     finally:
         if conn:
             conn.close()
+        if cur:
+            cur.close()    
