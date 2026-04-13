@@ -1,32 +1,37 @@
+import os
 from flask import request, jsonify
 from config import get_db_connection
+from werkzeug.utils import secure_filename
+
+
+UPLOAD_FOLDER = "static/videos"
+DB_PATH_PREFIX = "/videos"
 
 
 def save_course_video():
 
-    data = request.get_json() or {}
+    course_id = request.form.get("course_id")
+    module_id = request.form.get("module_id")
+    subtopic_id = request.form.get("subtopic_id")
+    video_title = request.form.get("video_title")
+    video_subtitle = request.form.get("video_subtitle")
+    is_intro_video = request.form.get("is_intro_video")
+    user_id = request.form.get("user_id")
 
-    course_id = data.get("course_id")
-    module_id = data.get("module_id")
-    subtopic_id = data.get("subtopic_id")
-    video_title = data.get("video_title")
-    video_subtitle = data.get("video_subtitle")
-    video_path = data.get("video_path")
-    is_intro_video = data.get("is_intro_video")
-    user_id = data.get("user_id")
+    file = request.files.get("video")
 
-    # Validation block to check if all required fields are present
+    # Validation
     if not all([
         course_id,
         module_id,
         subtopic_id,
         video_title,
-        video_path,
-        user_id
+        user_id,
+        file
     ]):
         return jsonify({
             "status": "error",
-            "message": "All fields are required"
+            "message": "course_id, module_id, subtopic_id, video_title, user_id and video file are required"
         }), 400
 
     conn = None
@@ -34,6 +39,23 @@ def save_course_video():
 
     try:
 
+        # Ensure folder exists
+        if not os.path.exists(UPLOAD_FOLDER):
+            os.makedirs(UPLOAD_FOLDER)
+
+        # Keep original filename
+        filename = secure_filename(file.filename)
+
+        # Actual file save path
+        file_save_path = f"{UPLOAD_FOLDER}/{filename}"
+
+        # DB path (what frontend uses)
+        db_video_path = f"{DB_PATH_PREFIX}/{filename}"
+
+        # Save file
+        file.save(file_save_path)
+
+        # DB connection
         conn = get_db_connection()
         cur = conn.cursor()
 
@@ -45,7 +67,7 @@ def save_course_video():
                 subtopic_id,
                 video_title,
                 video_subtitle,
-                video_path,
+                db_video_path,
                 is_intro_video,
                 user_id,
                 None
@@ -55,10 +77,7 @@ def save_course_video():
         row = cur.fetchone()
 
         if row is None:
-            result = {
-                "status": "error",
-                "message": "No response from database"
-            }
+            result = {"message": "Video uploaded successfully"}
 
         elif isinstance(row, dict):
             first_key = next(iter(row), None)
