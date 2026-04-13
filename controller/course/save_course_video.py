@@ -11,8 +11,8 @@ DB_PATH_PREFIX = "/videos"
 def save_course_video():
 
     course_id = request.form.get("course_id")
-    module_id = request.form.get("module_id")
-    subtopic_id = request.form.get("subtopic_id")
+    module_id = request.form.get("module_id") or None
+    subtopic_id = request.form.get("subtopic_id") or None
     video_title = request.form.get("video_title")
     video_subtitle = request.form.get("video_subtitle")
     is_intro_video = request.form.get("is_intro_video")
