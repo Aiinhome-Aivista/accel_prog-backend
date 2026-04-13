@@ -48,6 +48,8 @@ from logger_config import logger
 from controller.course.get_courses_dashboard_service import (
     get_courses_dashboard_service,
 )
+from controller.course.get_all_video_mapping import get_all_course_video_mapping
+from controller.course.save_course_video import save_course_video
 app = Flask(__name__)
 FlaskInstrumentor().instrument_app(app)
 CORS(app)  # Enable CORS for frontend communication
@@ -384,6 +386,15 @@ def upload_project_submission_route():
 @app.route(BASE_URL + "get_user_weekly_streak", methods=["POST"])
 def get_user_weekly_streak_route():
     return get_user_weekly_streak()
+
+
+@app.route(BASE_URL + "admin/get_course_video_mapping", methods=["GET"])
+def admin_get_course_video_mapping_route():
+    return get_all_course_video_mapping()
+
+@app.route(BASE_URL + "admin/save_course_video", methods=["POST"])
+def admin_save_course_video_route():
+    return save_course_video()
 
 
 def check_db_connection():
