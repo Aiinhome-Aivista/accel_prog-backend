@@ -26,7 +26,7 @@ def get_user_recent_activity():
 
         # Calling stored procedure
         cursor.execute(
-            "CALL login.get_user_recent_activity_v1(%s, %s);",
+            "CALL login.get_user_recent_activity_v2(%s, %s);",
             (user_id, None)
         )
 
