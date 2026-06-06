@@ -23,17 +23,12 @@ DB_CONFIG = {
 
 
 class Config:
-    # SMTP_SERVER = os.getenv("MAIL_SERVER")
-    # SMTP_PORT = os.getenv("MAIL_PORT")
-    # SMTP_USERNAME = os.getenv("MAIL_USERNAME")
-    # SMTP_PASSWORD = os.getenv("MAIL_PASSWORD")
-
-    MAIL_SERVER = "smtp.gmail.com"
-    MAIL_PORT = 465
-    MAIL_USE_SSL = True
-    MAIL_USE_TLS = False
-    MAIL_USERNAME = "support@mokshpath.org"
-    MAIL_PASSWORD = "mugy xaqu evmh arkk"
+    MAIL_SERVER = os.getenv("MAIL_SERVER", "smtp.gmail.com")
+    MAIL_PORT = int(os.getenv("MAIL_PORT", 465))
+    MAIL_USE_SSL = os.getenv("MAIL_USE_SSL", "True").lower() in ("true", "1", "yes")
+    MAIL_USE_TLS = os.getenv("MAIL_USE_TLS", "False").lower() in ("true", "1", "yes")
+    MAIL_USERNAME = os.getenv("MAIL_USERNAME")
+    MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
 
 def get_db_connection():
     conn = psycopg2.connect(**DB_CONFIG, cursor_factory=RealDictCursor)
